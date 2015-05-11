@@ -1,6 +1,6 @@
 # Parasitize CSS into JSX for migi
 
-`jaw`È¡×Ô¶¯Âş¼ÄÉúÊŞÖĞ¼ÄÉúÓÚÏÂ°ÍÉÏµÄParasite£¬ÒâÖ¸½«css¼ÄÉúÔÚjsxÉÏ¡£
+`jaw`å–è‡ªåŠ¨æ¼«å¯„ç”Ÿå…½ä¸­å¯„ç”Ÿäºä¸‹å·´ä¸Šçš„Parasiteï¼Œæ„æŒ‡å°†csså¯„ç”Ÿåœ¨jsxä¸Šã€‚
 
 # License
 [MIT License]
