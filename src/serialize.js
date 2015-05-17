@@ -1,5 +1,6 @@
 import homunculus from 'homunculus';
 import join from './join';
+import sort from './sort';
 
 var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
@@ -61,6 +62,20 @@ function record(sel, styles, res) {
     var s = t.content();
     switch(t.type()) {
       case Token.SELECTOR:
+        if(t.next() && t.next().type() == Token.SELECTOR) {
+          var next = t.next();
+          var list = [s];
+          do {
+            list.push(next.content());
+            next = next.next();
+            i++;
+          }
+          while(next && next.type() == Token.SELECTOR);
+          sort(list, function(a, b) {
+            return a < b;
+          });
+          s = list.join('');
+        }
       case Token.PSEUDO:
       case Token.SIGN:
         now[s] = now[s] || {};
@@ -68,10 +83,10 @@ function record(sel, styles, res) {
         break;
     }
   }
-  now.list = now.list || [];
+  now.values = now.values || [];
   styles.forEach(function(style) {
-    if(now.list.indexOf(style) == -1) {
-      now.list.push(style);
+    if(now.values.indexOf(style) == -1) {
+      now.values.push(style);
     }
   });
 }
