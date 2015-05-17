@@ -6,19 +6,21 @@ var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
 
 function parse(node) {
-  var res = {};
+  var _res = {};
+  var _back = {};
   node.leaves().forEach(function(leaf) {
-    styleset(leaf, res);
+    styleset(leaf, _res, _back);
   });
-  depth(res);
-  return res;
+  depth(_res);
+  depth(_back);
+  return _back;
 }
 
-function styleset(node, res) {
+function styleset(node, res, back) {
   var sels = selectors(node.first());
   var styles = block(node.last());
   sels.forEach(function(sel) {
-    record(sel, styles, res);
+    record(sel, styles, res, back);
   });
 }
 function selectors(node) {
@@ -52,7 +54,7 @@ function style(node) {
   return s;
 }
 
-function record(sel, styles, res) {
+function record(sel, styles, res, back) {
   var first = sel[0];
   //没有选择器直接属性或伪类为省略*
   if(first.type() != Token.SELECTOR) {
@@ -85,10 +87,43 @@ function record(sel, styles, res) {
         break;
     }
   }
-  now.values = now.values || [];
+  now._v = now._v || [];
   styles.forEach(function(style) {
-    if(now.values.indexOf(style) == -1) {
-      now.values.push(style);
+    if(now._v.indexOf(style) == -1) {
+      now._v.push(style);
+    }
+  });
+  now = back;
+  for(i = len - 1; i >= 0; i--) {
+    var t = sel[i];
+    var s = t.content();
+    switch(t.type()) {
+      case Token.SELECTOR:
+        if(t.prev() && t.prev().type() == Token.SELECTOR) {
+          var prev = t.prev();
+          var list = [s];
+          do {
+            list.push(prev.content());
+            prev = prev.next();
+            i++;
+          }
+          while(prev && prev.type() == Token.SELECTOR);
+          sort(list, function(a, b) {
+            return a < b;
+          });
+          s = list.join('');
+        }
+      case Token.PSEUDO:
+      case Token.SIGN:
+        now[s] = now[s] || {};
+        now = now[s];
+        break;
+    }
+  }
+  now._v = now._v || [];
+  styles.forEach(function(style) {
+    if(now._v.indexOf(style) == -1) {
+      now._v.push(style);
     }
   });
 }
@@ -96,7 +131,7 @@ function record(sel, styles, res) {
 function depth(res) {
   var keys = Object.keys(res);
   keys = keys.filter(function(k) {
-    return k != 'values';
+    return k != '_v';
   });
   if(keys.length) {
     var i = 1;
@@ -104,11 +139,10 @@ function depth(res) {
       var item = res[k];
       i = Math.max(depth(item), i);
     });
-    res._depth = i;
+    res._d = i;
     return i + 1;
   }
   else {
-    res._depth = 0;
     return 0;
   }
 }
