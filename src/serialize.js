@@ -10,6 +10,7 @@ function parse(node) {
   node.leaves().forEach(function(leaf) {
     styleset(leaf, res);
   });
+  depth(res);
   return res;
 }
 
@@ -53,6 +54,7 @@ function style(node) {
 
 function record(sel, styles, res) {
   var first = sel[0];
+  //没有选择器直接属性或伪类为省略*
   if(first.type() != Token.SELECTOR) {
     sel.unshift(new Token(Token.SELECTOR, '*'));
   }
@@ -89,6 +91,26 @@ function record(sel, styles, res) {
       now.values.push(style);
     }
   });
+}
+
+function depth(res) {
+  var keys = Object.keys(res);
+  keys = keys.filter(function(k) {
+    return k != 'values';
+  });
+  if(keys.length) {
+    var i = 1;
+    keys.forEach(function(k) {
+      var item = res[k];
+      i = Math.max(depth(item), i);
+    });
+    res._depth = i;
+    return i + 1;
+  }
+  else {
+    res._depth = 0;
+    return 0;
+  }
 }
 
 export default parse;
