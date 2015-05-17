@@ -68,7 +68,12 @@ function record(sel, styles, res) {
         break;
     }
   }
-  now.list = styles;
+  now.list = now.list || [];
+  styles.forEach(function(style) {
+    if(now.list.indexOf(style) == -1) {
+      now.list.push(style);
+    }
+  });
 }
 
 exports.default=parse;
