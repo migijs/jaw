@@ -93,6 +93,8 @@ function record(sel, styles, res, back) {
       now._v.push(style);
     }
   });
+  now._v = now._v.join('');
+
   now = back;
   for(i = len - 1; i >= 0; i--) {
     var t = sel[i];
@@ -126,6 +128,7 @@ function record(sel, styles, res, back) {
       now._v.push(style);
     }
   });
+  now._v = now._v.join('');
 }
 
 function depth(res) {
