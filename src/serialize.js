@@ -1,19 +1,74 @@
 import homunculus from 'homunculus';
-import componentName from './componentName';
+import join from './join';
 
 var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
 
-function parse(code) {
-  var parser = homunculus.getParser('css');
-  var node = parser.parse(code);
-  var res = [];
-  recursion(node, res);
+function parse(node) {
+  var res = {};
+  node.leaves().forEach(function(leaf) {
+    styleset(leaf, res);
+  });
   return res;
 }
 
-function recursion(node, res) {
-  //TODO
+function styleset(node, res) {
+  var sels = selectors(node.first());
+  var styles = block(node.last());
+  sels.forEach(function(sel) {
+    record(sel, styles, res);
+  });
+}
+function selectors(node) {
+  var res = [];
+  node.leaves().forEach(function(leaf) {
+    if(leaf.name() == Node.SELECTOR) {
+      res.push(selector(leaf));
+    }
+  });
+  return res;
+}
+function selector(node) {
+  return node.leaves().map(function(leaf) {
+    return leaf.token();
+  });
+}
+function block(node) {
+  var res = [];
+  node.leaves().forEach(function(leaf) {
+    if(leaf.name() == Node.STYLE) {
+      res.push(style(leaf));
+    }
+  });
+  return res;
+}
+function style(node) {
+  var s = join(node, true).trim();
+  if(s.charAt(s.length - 1) != ';') {
+    s += ';';
+  }
+  return s;
+}
+
+function record(sel, styles, res) {
+  var first = sel[0];
+  if(first.type() != Token.SELECTOR) {
+    sel.unshift(new Token(Token.SELECTOR, '*'));
+  }
+  var now = res;
+  for(var i = 0, len = sel.length; i < len; i++) {
+    var t = sel[i];
+    var s = t.content();
+    switch(t.type()) {
+      case Token.SELECTOR:
+      case Token.PSEUDO:
+      case Token.SIGN:
+        now[s] = now[s] || {};
+        now = now[s];
+        break;
+    }
+  }
+  now.list = styles;
 }
 
 export default parse;
