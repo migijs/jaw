@@ -6,21 +6,19 @@ var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
 
 function parse(node) {
-  var _res = {};
-  var _back = {};
+  var res = {};
   node.leaves().forEach(function(leaf) {
-    styleset(leaf, _res, _back);
+    styleset(leaf, res);
   });
-  depth(_res);
-  depth(_back);
-  return _back;
+  depth(res);
+  return res;
 }
 
-function styleset(node, res, back) {
+function styleset(node, res) {
   var sels = selectors(node.first());
   var styles = block(node.last());
   sels.forEach(function(sel) {
-    record(sel, styles, res, back);
+    record(sel, styles, res);
   });
 }
 function selectors(node) {
@@ -54,49 +52,14 @@ function style(node) {
   return s;
 }
 
-function record(sel, styles, res, back) {
+function record(sel, styles, res) {
   var first = sel[0];
   //没有选择器直接属性或伪类为省略*
   if(first.type() != Token.SELECTOR) {
     sel.unshift(new Token(Token.SELECTOR, '*'));
   }
   var now = res;
-  for(var i = 0, len = sel.length; i < len; i++) {
-    var t = sel[i];
-    var s = t.content();
-    switch(t.type()) {
-      case Token.SELECTOR:
-        if(t.next() && t.next().type() == Token.SELECTOR) {
-          var next = t.next();
-          var list = [s];
-          do {
-            list.push(next.content());
-            next = next.next();
-            i++;
-          }
-          while(next && next.type() == Token.SELECTOR);
-          sort(list, function(a, b) {
-            return a < b;
-          });
-          s = list.join('');
-        }
-      case Token.PSEUDO:
-      case Token.SIGN:
-        now[s] = now[s] || {};
-        now = now[s];
-        break;
-    }
-  }
-  now._v = now._v || [];
-  styles.forEach(function(style) {
-    if(now._v.indexOf(style) == -1) {
-      now._v.push(style);
-    }
-  });
-  now._v = now._v.join('');
-
-  now = back;
-  for(i = len - 1; i >= 0; i--) {
+  for(var i = sel.length - 1; i >= 0; i--) {
     var t = sel[i];
     var s = t.content();
     switch(t.type()) {
