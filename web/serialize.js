@@ -7,18 +7,19 @@ var Node = homunculus.getClass('node', 'css');
 
 function parse(node) {
   var res = {};
-  node.leaves().forEach(function(leaf) {
-    styleset(leaf, res);
+  node.leaves().forEach(function(leaf, i) {
+    styleset(leaf, i, res);
   });
+  priority(res, 0);
   depth(res);
   return res;
 }
 
-function styleset(node, res) {
+function styleset(node, i, res) {
   var sels = selectors(node.first());
   var styles = block(node.last());
   sels.forEach(function(sel) {
-    record(sel, styles, res);
+    record(sel, i, styles, res);
   });
 }
 function selectors(node) {
@@ -46,13 +47,11 @@ function block(node) {
 }
 function style(node) {
   var s = join(node, true).trim();
-  if(s.charAt(s.length - 1) != ';') {
-    s += ';';
-  }
+  s = s.replace(/;$/, '');
   return s;
 }
 
-function record(sel, styles, res) {
+function record(sel, idx, styles, res) {
   var first = sel[0];
   //没有选择器直接属性或伪类为省略*
   if(first.type() != Token.SELECTOR) {
@@ -86,18 +85,31 @@ function record(sel, styles, res) {
     }
   }
   now._v = now._v || [];
+  now._i = idx;
   styles.forEach(function(style) {
-    if(now._v.indexOf(style) == -1) {
-      now._v.push(style);
-    }
+    now._v.push({
+      i: idx,
+      v: style
+    });
   });
-  now._v = now._v.join('');
+}
+
+function priority(res, i) {
+  var keys = Object.keys(res);
+  keys = keys.filter(function(k) {
+    return k.charAt(0) != '_';
+  });
+  if(keys.length) {
+    //
+  }
+  //有值时才计算优先级
+  if(res.hasOwnProperty('_v')) {}
 }
 
 function depth(res) {
   var keys = Object.keys(res);
   keys = keys.filter(function(k) {
-    return k != '_v';
+    return k.charAt(0) != '_';
   });
   if(keys.length) {
     var i = 1;
