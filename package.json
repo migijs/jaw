@@ -30,7 +30,6 @@
     }
   },
   "dependencies": {
-    "migi": "~0.1.0",
     "homunculus": "~0.9.5"
   },
   "devDependencies": {
