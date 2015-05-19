@@ -10,7 +10,6 @@ function parse(node) {
   node.leaves().forEach(function(leaf, i) {
     styleset(leaf, i, res);
   });
-  priority(res, 0);
   depth(res);
   return res;
 }
@@ -57,19 +56,23 @@ function record(sel, idx, styles, res) {
   if(first.type() != Token.SELECTOR) {
     sel.unshift(new Token(Token.SELECTOR, '*'));
   }
+  var _p = 0;
   var now = res;
   for(var i = sel.length - 1; i >= 0; i--) {
     var t = sel[i];
     var s = t.content();
+    _p += priority(t, s);
     switch(t.type()) {
       case Token.SELECTOR:
         if(t.prev() && t.prev().type() == Token.SELECTOR) {
           var prev = t.prev();
           var list = [s];
           do {
-            list.push(prev.content());
+            s = prev.content();
+            list.push(s);
             prev = prev.next();
             i++;
+            _p += priority(prev, s);
           }
           while(prev && prev.type() == Token.SELECTOR);
           sort(list, function(a, b) {
@@ -91,18 +94,24 @@ function record(sel, idx, styles, res) {
       v: style
     });
   });
+  now._p = _p;
 }
 
-function priority(res, i) {
-  var keys = Object.keys(res);
-  keys = keys.filter(function(k) {
-    return k.charAt(0) != '_';
-  });
-  if(keys.length) {
-    //
+function priority(token, s) {
+  switch(token.type()) {
+    case Token.SELECTOR:
+      if(s.charAt(0) == '#') {
+        return 100;
+      }
+      else if(s.charAt(0) == '.') {
+        return 10;
+      }
+      return 1;
+    case Token.PSEUDO:
+      return 1;
+    default:
+      return 0;
   }
-  //有值时才计算优先级
-  if(res.hasOwnProperty('_v')) {}
 }
 
 function depth(res) {
