@@ -105,7 +105,15 @@ function record(sel, idx, styles, res) {
           _p += priority(prev, s);
         }
         now['_:'] = now['_:'] || [];
-        now['_:'].splice.apply(now['_:'],[now.length,0].concat(Array.from(list)));
+        now['_:'][0] = now['_:'][0] || [];
+        list.forEach(function(item) {
+          //防止多次重复
+          if(now['_:'][0].indexOf(item) == -1) {
+            now['_:'][0].push(item);
+          }
+          now['_:'][1] = now['_:'][1] || {};
+          now = now['_:'][1];
+        });
         break;
       case Token.SIGN:
         //TODO: +~>等
