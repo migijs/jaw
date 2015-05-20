@@ -89,10 +89,7 @@ function record(sel, idx, styles, res) {
   }
   now._v = now._v || [];
   styles.forEach(function(style) {
-    now._v.push({
-      i: idx,
-      v: style
-    });
+    now._v.push([idx, style]);
   });
   now._p = _p;
 }
