@@ -80,10 +80,35 @@ function record(sel, idx, styles, res) {
           });
           s = list.join('');
         }
-      case Token.PSEUDO:
-      case Token.SIGN:
         now[s] = now[s] || {};
         now = now[s];
+        break;
+      case Token.PSEUDO:
+        var list = [s];
+        var prev = t.prev();
+        while(prev && prev.type() == Token.PSEUDO) {
+          _p += priority(prev, s);
+          list.push(prev.content());
+          prev = prev.prev();
+          i--;
+        }
+        //省略*
+        if(prev.type() != Token.SELECTOR) {
+          now['*'] = now['*'] || {};
+          now = now['*'];
+        }
+        else {
+          s = prev.content();
+          now[s] = now[s] || {};
+          now = now[s];
+          i--;
+          _p += priority(prev, s);
+        }
+        now['_:'] = now['_:'] || [];
+        now['_:'].splice.apply(now['_:'],[now.length,0].concat(Array.from(list)));
+        break;
+      case Token.SIGN:
+        //TODO: +~>等
         break;
     }
   }
