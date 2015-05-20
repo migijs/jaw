@@ -84,11 +84,11 @@ function record(sel, idx, styles, res) {
         now = now[s];
         break;
       case Token.PSEUDO:
-        var list = [s];
+        var list = [s.replace(/^:+/, '')];
         var prev = t.prev();
         while(prev && prev.type() == Token.PSEUDO) {
           _p += priority(prev, s);
-          list.push(prev.content());
+          list.push(prev.content().replace(/^:+/, ''));
           prev = prev.prev();
           i--;
         }
