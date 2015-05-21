@@ -195,16 +195,23 @@
       var nodes = Array.prototype.slice.call(document.getElementsByTagName('code'), 0);
       nodes.forEach(function(node, i) {
         var res = jaw.parse(node.textContent || node.innerText || node.firstChild && node.firstChild.nodeValue);
-        res = JSONFormat(JSON.stringify(res));
+        res = JSON.stringify(res);
         var ast = jaw.ast;
         var tokens = jaw.tokens;
         var pre = node.parentNode;
         var ncode = document.createElement('code');
+        var ncode2 = document.createElement('code');
         var npre = document.createElement('pre');
+        var npre2 = document.createElement('pre');
         ncode.innerHTML = res.replace(/</g, '&lt;');
         ncode.className = 'brush:js';
         npre.appendChild(ncode);
+        res = JSONFormat(res);
+        ncode2.innerHTML = res.replace(/</g, '&lt;');
+        ncode2.className = 'brush:js';
+        npre2.appendChild(ncode2);
         pre.parentNode.insertBefore(npre, pre.nextSibling);
+        pre.parentNode.insertBefore(npre2, pre.nextSibling);
         if(ast) {
           draw(i, ast, npre.nextSibling);
         }
@@ -224,6 +231,7 @@
       });
       var pre = document.getElementsByTagName('pre');
       pre[1] && pre[1].parentNode.removeChild(pre[1]);
+      pre[2] && pre[2].parentNode.removeChild(pre[2]);
       document.getElementsByTagName('code')[0].innerHTML = s.replace(/</g, '&lt;');
       pre[0].style.display = 'block';
       init();
