@@ -116,7 +116,33 @@ function record(sel, idx, styles, res) {
         });
         break;
       case Token.SIGN:
-        //TODO: +~>等
+        switch(s) {
+          case '>':
+          case '+':
+          case '~':
+            now['_' + s] = now['_' + s] || {};
+            now = now['_' + s];
+            i--;
+            var prev = t.prev();
+            //省略*
+            if(prev.type() != Token.SELECTOR) {
+              now['*'] = now['*'] || {};
+              now = now['*'];
+            }
+            else {
+              s = prev.content();
+              now[s] = now[s] || {};
+              now = now[s];
+              i--;
+              _p += priority(prev, s);
+            }
+            break;
+          //TODO: 属性和CSS3伪类
+          case ')':
+            break;
+          case ']':
+            break;
+        }
         break;
     }
   }
