@@ -175,12 +175,14 @@ function depth(res) {
     return k.charAt(0) != '_';
   });
   if(keys.length) {
-    var i = 1;
+    var i = 0;
     keys.forEach(function(k) {
       var item = res[k];
       i = Math.max(depth(item), i);
     });
-    res._d = i;
+    if(i) {
+      res._d = i;
+    }
     return i + 1;
   }
   else {
