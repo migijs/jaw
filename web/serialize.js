@@ -61,7 +61,7 @@ function record(sel, idx, styles, res) {
   for(var i = sel.length - 1; i >= 0; i--) {
     var t = sel[i];
     var s = t.content();
-    _p += priority(t, s);
+    _p += priority(t, s);console.log(s)
     switch(t.type()) {
       case Token.SELECTOR:
         if(t.prev() && t.prev().type() == Token.SELECTOR) {
@@ -133,7 +133,6 @@ function record(sel, idx, styles, res) {
               s = prev.content();
               now[s] = now[s] || {};
               now = now[s];
-              i--;
               _p += priority(prev, s);
             }
             break;
