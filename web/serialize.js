@@ -61,7 +61,7 @@ function record(sel, idx, styles, res) {
   for(var i = sel.length - 1; i >= 0; i--) {
     var t = sel[i];
     var s = t.content();
-    _p += priority(t, s);console.log(s)
+    _p += priority(t, s);
     switch(t.type()) {
       case Token.SELECTOR:
         if(t.prev() && t.prev().type() == Token.SELECTOR) {
