@@ -104,16 +104,22 @@ function record(sel, idx, styles, res) {
           i--;
           _p += priority(prev, s);
         }
+
         now['_:'] = now['_:'] || [];
-        now['_:'][0] = now['_:'][0] || [];
+        //TODO: 重复的合并，如a:hover{...}a:hover{...}会生成2个hover数组
+        var arr = [];
+        var pseudo = [];
+        var v = {};
         list.forEach(function(item) {
           //防止多次重复
-          if(now['_:'][0].indexOf(item) == -1) {
-            now['_:'][0].push(item);
+          if(pseudo.indexOf(item) == -1) {
+            pseudo.push(item);
           }
-          now['_:'][1] = now['_:'][1] || {};
-          now = now['_:'][1];
         });
+        arr.push(pseudo);
+        arr.push(v);
+        now['_:'].push(arr);
+        now = v;
         break;
       case Token.SIGN:
         switch(s) {
