@@ -106,7 +106,7 @@ function record(sel, idx, styles, res) {
         }
 
         now['_:'] = now['_:'] || [];
-        //TODO: 重复的合并，如a:hover{...}a:hover{...}会生成2个hover数组
+        var pseudos = now['_:'];
         var arr = [];
         var pseudo = [];
         var v = {};
@@ -116,9 +116,25 @@ function record(sel, idx, styles, res) {
             pseudo.push(item);
           }
         });
-        arr.push(pseudo);
-        arr.push(v);
-        now['_:'].push(arr);
+        //排序后比对，可能重复，合并之如a:hover{...}a:hover{...}会生成2个hover数组
+        sort(pseudo, function(a, b) {
+          return a < b;
+        });
+        var isExist = -1;
+        for(var j = 0, len = pseudos.length; j < len; j++) {
+          if(pseudos[j][0].join(',') == pseudo.join(',')) {
+            isExist = j;
+            break;
+          }
+        }
+        if(isExist > -1) {
+          pseudos[j].push(v);
+        }
+        else {
+          arr.push(pseudo);
+          arr.push(v);
+          pseudos.push(arr);
+        }
         now = v;
         break;
       case Token.SIGN:
