@@ -128,14 +128,14 @@ function record(sel, idx, styles, res) {
           }
         }
         if(isExist > -1) {
-          pseudos[j].push(v);
+          now = pseudos[j][1];
         }
         else {
           arr.push(pseudo);
-          arr.push(v);
+          now = {};
+          arr.push(now);
           pseudos.push(arr);
         }
-        now = v;
         break;
       case Token.SIGN:
         switch(s) {
