@@ -158,7 +158,7 @@ function record(sel, idx, styles, res) {
               _p += priority(prev, s);
             }
             break;
-          case ']':console.log(1)
+          case ']':
             var list = [];
             var item;
             var prev = t;
