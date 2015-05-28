@@ -1,6 +1,6 @@
-define(function(require, exports, module){var homunculus=function(){var _0=require('homunculus');return _0.hasOwnProperty("homunculus")?_0.homunculus:_0.hasOwnProperty("default")?_0.default:_0}();
-var join=function(){var _1=require('./join');return _1.hasOwnProperty("join")?_1.join:_1.hasOwnProperty("default")?_1.default:_1}();
-var sort=function(){var _2=require('./sort');return _2.hasOwnProperty("sort")?_2.sort:_2.hasOwnProperty("default")?_2.default:_2}();
+define(function(require, exports, module){var homunculus=function(){var _0=require('homunculus');return _0.hasOwnProperty("homunculus")?_0.homunculus:_0.hasOwnProperty("default")?_0["default"]:_0}();
+var join=function(){var _1=require('./join');return _1.hasOwnProperty("join")?_1.join:_1.hasOwnProperty("default")?_1["default"]:_1}();
+var sort=function(){var _2=require('./sort');return _2.hasOwnProperty("sort")?_2.sort:_2.hasOwnProperty("default")?_2["default"]:_2}();
 
 var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
@@ -87,7 +87,7 @@ function record(sel, idx, styles, res) {
         var list = [s.replace(/^:+/, '')];
         var prev = t.prev();
         while(prev && prev.type() == Token.PSEUDO) {
-          _p += priority(prev, s);
+          _p += priority(prev);
           list.push(prev.content().replace(/^:+/, ''));
           prev = prev.prev();
           i--;
@@ -104,12 +104,11 @@ function record(sel, idx, styles, res) {
           i--;
           _p += priority(prev, s);
         }
-
+        //伪类都存在_:对象下，是个数组
+        //每项为长度2的数组，第1个是伪类组合，第2个是对应的值
         now['_:'] = now['_:'] || [];
         var pseudos = now['_:'];
-        var arr = [];
         var pseudo = [];
-        var v = {};
         list.forEach(function(item) {
           //防止多次重复
           if(pseudo.indexOf(item) == -1) {
@@ -128,9 +127,10 @@ function record(sel, idx, styles, res) {
           }
         }
         if(isExist > -1) {
-          now = pseudos[j][1];
+          now = pseudos[isExist][1];
         }
         else {
+          var arr = [];
           arr.push(pseudo);
           now = {};
           arr.push(now);
@@ -158,10 +158,86 @@ function record(sel, idx, styles, res) {
               _p += priority(prev, s);
             }
             break;
-          //TODO: 属性和CSS3伪类
-          case ')':
+          case ']':console.log(1)
+            var list = [];
+            var item;
+            var prev = t;
+            //可能有多个属性
+            while(prev.content() == ']') {
+              i--;
+              item = [];
+              prev = prev.prev();
+              while(prev) {
+                i--;
+                s = prev.content();
+                prev = prev.prev();
+                if(s == '[') {
+                  break;
+                }
+                item.unshift(s);
+              }
+              list.push({
+                v: item,
+                s: item.join('')
+              });
+              _p += 10;
+            }
+            //省略*
+            if(prev.type() != Token.SELECTOR) {
+              now['*'] = now['*'] || {};
+              now = now['*'];
+            }
+            else {
+              s = prev.content();
+              now[s] = now[s] || {};
+              now = now[s];
+              i--;
+              _p += priority(prev, s);
+            }
+            //属性都存在_[对象下，是个数组
+            //每项为长度2的数组，第1个是属性组合，第2个是对应的值
+            now['_['] = now['_['] || [];
+            var attrs = now['_['];
+            var attr = [];
+            var attrTemp = {};
+            list.forEach(function(item) {
+              if(!attrTemp.hasOwnProperty(item.s)) {
+                attr.push(item.v);
+                attrTemp[item.s] = true;
+              }
+            });
+            //排序后比对，可能重复
+            sort(list, function(a, b) {
+              return a.s < b.s;
+            });
+            var isExist = -1;
+            for(var j = 0, len = attrs.length; j < len; j++) {
+              var s1 = '';
+              s1 += attrs[j][0].map(function(item) {
+                return item.join('');
+              });
+              var s2 = '';
+              s2 += attr.map(function(item) {
+                return item.join('');
+              });
+              if(s1 == s2) {
+                isExist = j;
+                break;
+              }
+            }
+            if(isExist > -1) {
+              now = attrs[isExist][1];
+            }
+            else {
+              var arr = [];
+              arr.push(attr);
+              now = {};
+              arr.push(now);
+              attrs.push(arr);
+            }
             break;
-          case ']':
+          //TODO: CSS3伪类
+          case ')':
             break;
         }
         break;
@@ -212,4 +288,4 @@ function depth(res) {
   }
 }
 
-exports.default=parse;});
+exports["default"]=parse;});
