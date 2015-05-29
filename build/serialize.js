@@ -169,7 +169,7 @@ function record(sel, idx, styles, res) {
               prev = prev.prev();
               while(prev) {
                 i--;
-                s = prev.content();
+                s = prev.content().replace(/^(['"'])(.*)\1/, '$2');
                 prev = prev.prev();
                 if(s == '[') {
                   break;
