@@ -1,6 +1,6 @@
 {
   "name": "jaw",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Parasitize CSS to JSX",
   "maintainers": [
     {
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "es6-shim": "*",
-    "homunculus": "~0.9.6"
+    "homunculus": "~0.9.8"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
@@ -43,11 +43,24 @@
     "mocha": "^2.2.4",
     "mocha-lcov-reporter": "^0.0.2",
     "through2": "^0.6.1",
-    "jsdc": "^0.6.3"
+    "jsdc": "^0.6.5",
+    "spm": "~3.6.0"
   },
   "main": "./index",
   "engines": {
     "node": ">= 0.10.0"
+  },
+  "spm": {
+    "main": "./index.js",
+    "output": [
+      "./index.js"
+    ],
+    "build": {
+      "global": {
+        "homunculus": "homunculus"
+      }
+    },
+    "buildArgs": "--standalone"
   },
   "readmeFilename": "README.md"
 }

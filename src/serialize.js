@@ -52,10 +52,6 @@ function style(node) {
 
 function record(sel, idx, styles, res) {
   var first = sel[0];
-  //没有选择器直接属性或伪类为省略*
-  if(first.type() != Token.SELECTOR) {
-    sel.unshift(new Token(Token.SELECTOR, '*'));
-  }
   var _p = 0;
   var now = res;
   for(var i = sel.length - 1; i >= 0; i--) {
@@ -64,15 +60,15 @@ function record(sel, idx, styles, res) {
     _p += priority(t, s);
     switch(t.type()) {
       case Token.SELECTOR:
-        if(t.prev() && t.prev().type() == Token.SELECTOR) {
-          var prev = t.prev();
+        var prev = t.prev();
+        if(prev && prev.type() == Token.SELECTOR) {
           var list = [s];
           do {
             s = prev.content();
             list.push(s);
-            prev = prev.next();
-            i++;
             _p += priority(prev, s);
+            prev = prev.prev();
+            i--;
           }
           while(prev && prev.type() == Token.SELECTOR);
           sort(list, function(a, b) {
@@ -93,11 +89,11 @@ function record(sel, idx, styles, res) {
           i--;
         }
         //省略*
-        if(prev.type() != Token.SELECTOR) {
+        if(!prev || prev.type() != Token.SELECTOR) {
           now['*'] = now['*'] || {};
           now = now['*'];
         }
-        else {
+        else if(prev) {
           s = prev.content();
           now[s] = now[s] || {};
           now = now[s];
@@ -146,24 +142,17 @@ function record(sel, idx, styles, res) {
             now = now['_' + s];
             i--;
             var prev = t.prev();
-            //省略*
-            if(prev.type() != Token.SELECTOR) {
-              now['*'] = now['*'] || {};
-              now = now['*'];
-            }
-            else {
-              s = prev.content();
-              now[s] = now[s] || {};
-              now = now[s];
-              _p += priority(prev, s);
-            }
+            s = prev.content();
+            now[s] = now[s] || {};
+            now = now[s];
+            _p += priority(prev, s);
             break;
           case ']':
             var list = [];
             var item;
             var prev = t;
             //可能有多个属性
-            while(prev.content() == ']') {
+            while(prev && prev.content() == ']') {
               i--;
               item = [];
               prev = prev.prev();
@@ -183,7 +172,7 @@ function record(sel, idx, styles, res) {
               _p += 10;
             }
             //省略*
-            if(prev.type() != Token.SELECTOR) {
+            if(!prev || prev.type() != Token.SELECTOR) {
               now['*'] = now['*'] || {};
               now = now['*'];
             }

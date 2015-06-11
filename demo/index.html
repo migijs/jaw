@@ -139,7 +139,7 @@
     }]
   });
   define('fs', {});
-  seajs.use(['../index', './jssc'], function(jaw, jssc) {
+  seajs.use(['../init', './jssc'], function(jaw, jssc) {
     function init() {
       var p = [],
         push = function( m ) { return '\\' + p.push( m ) + '\\'; },
