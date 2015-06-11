@@ -1,9 +1,7 @@
 build:
 	@gulp
 
-test: build test-compile
-
-test-compile: build
+test: build
 	@mocha tests/test.js -R spec
 
 coveralls:
