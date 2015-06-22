@@ -210,6 +210,11 @@ describe('attr', function() {
     var res = jaw.parse(s);
     expect(res).to.eql({"a":{"_[":[[[["href","$=","#"]],{"_v":[[0,"margin:0"]],"_p":11}]]}});
   });
+  it('long', function() {
+    var s = 'div p a[href$="#"]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"a":{"_[":[[[["href","$=","#"]],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":13}},"_d":1}]]}});
+  });
 });
 
 describe('relation', function() {
