@@ -258,6 +258,19 @@ function priority(token, s) {
 
 function depth(res) {
   var keys = Object.keys(res);
+  //_:伪类
+  if(res.hasOwnProperty('_:')) {
+    res['_:'].forEach(function(item) {
+      depth(item[1]);
+    });
+  }
+  //_[属性
+  if(res.hasOwnProperty('_[')) {
+    res['_['].forEach(function(item) {
+      depth(item[1]);
+    });
+  }
+  //普通样式深度
   keys = keys.filter(function(k) {
     return k.charAt(0) != '_';
   });

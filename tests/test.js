@@ -162,10 +162,15 @@ describe(':pseudo', function() {
     var res = jaw.parse(s);
     expect(res).to.eql({"a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":2}]]},"div":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":2}]]}});
   });
-  it('long', function() {
+  it('multi', function() {
     var s = 'a:hover:first-child:last-child{margin:0}';
     var res = jaw.parse(s);
     expect(res).to.eql({"a":{"_:":[[["last-child","hover","first-child"],{"_v":[[0,"margin:0"]],"_p":4}]]}});
+  });
+  it('long', function() {
+    var s = 'div p a:hover{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"a":{"_:":[[["hover"],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":4}},"_d":1}]]}});
   });
 });
 
