@@ -129,6 +129,36 @@ describe('simple', function() {
     var res = jaw.parse(s);
     expect(res).to.eql({"div":{"_v":[[0,"margin:0"]],"_p":1},"a":{"_v":[[0,"margin:0"]],"_p":1}});
   });
+  it('both tag/class/id', function() {
+    var s = '*.a#b{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.#":true,"*.a#b":{"_v":[[0,"margin:0"]],"_p":111}});
+  });
+  it('*/class', function() {
+    var s = '*.a{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.":true,"*.a":{"_v":[[0,"margin:0"]],"_p":11}});
+  });
+  it('*/id', function() {
+    var s = '*#a{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*#":true,"*#a":{"_v":[[0,"margin:0"]],"_p":101}});
+  });
+  it('nest */class', function() {
+    var s = 'div *.a{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.":true,"*.a":{"div":{"_v":[[0,"margin:0"]],"_p":12}},"_d":1});
+  });
+  it('nest */id', function() {
+    var s = 'div *#a{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*#":true,"*#a":{"div":{"_v":[[0,"margin:0"]],"_p":102}},"_d":1});
+  });
+  it('nest tag/class/id', function() {
+    var s = 'div *.a#b{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.#":true,"*.a#b":{"div":{"_v":[[0,"margin:0"]],"_p":112}},"_d":1});
+  });
 });
 
 describe(':pseudo', function() {
@@ -150,12 +180,12 @@ describe(':pseudo', function() {
   it('no tagname', function() {
     var s = ':hover{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"*":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":1}]]}});
+    expect(res).to.eql({"_*":true,"*":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":1}]]}});
   });
   it('*', function() {
     var s = '*:hover{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"*":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":2}]]}});
+    expect(res).to.eql({"_*":true,"*":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":2}]]}});
   });
   it(',', function() {
     var s = 'a:hover,div:hover{margin:0}';
@@ -171,6 +201,21 @@ describe(':pseudo', function() {
     var s = 'div p a:hover{margin:0}';
     var res = jaw.parse(s);
     expect(res).to.eql({"a":{"_:":[[["hover"],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":4}},"_d":1}]]}});
+  });
+  it('*.', function() {
+    var s = '*.a:hover{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.":true,"*.a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":12}]]}});
+  });
+  it('*#', function() {
+    var s = '*#a:hover{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*#":true,"*#a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":102}]]}});
+  });
+  it('*.#', function() {
+    var s = '*.a#b:hover{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.#":true,"*.a#b":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":112}]]}});
   });
 });
 
@@ -193,12 +238,12 @@ describe('attr', function() {
   it('*', function() {
     var s = '*[href="#"]{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"*":{"_[":[[[["href","=","#"]],{"_v":[[0,"margin:0"]],"_p":11}]]}});
+    expect(res).to.eql({"_*":true,"*":{"_[":[[[["href","=","#"]],{"_v":[[0,"margin:0"]],"_p":11}]]}});
   });
   it('no tagname', function() {
     var s = '[href="#"]{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"*":{"_[":[[[["href","=","#"]],{"_v":[[0,"margin:0"]],"_p":10}]]}});
+    expect(res).to.eql({"_*":true,"*":{"_[":[[[["href","=","#"]],{"_v":[[0,"margin:0"]],"_p":10}]]}});
   });
   it(',', function() {
     var s = 'a[href="#"],div[href="#"]{margin:0}';
@@ -214,6 +259,21 @@ describe('attr', function() {
     var s = 'div p a[href$="#"]{margin:0}';
     var res = jaw.parse(s);
     expect(res).to.eql({"a":{"_[":[[[["href","$=","#"]],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":13}},"_d":1}]]}});
+  });
+  it('*.', function() {
+    var s = '*.a[attr]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.":true,"*.a":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":21}]]}});
+  });
+  it('*#', function() {
+    var s = '*#a[attr]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*#":true,"*#a":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":111}]]}});
+  });
+  it('*.#', function() {
+    var s = '*.a#b[attr]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*.#":true,"*.a#b":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":121}]]}});
   });
 });
 

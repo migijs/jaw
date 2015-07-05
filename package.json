@@ -1,7 +1,7 @@
 {
   "name": "jaw",
-  "version": "0.0.5",
-  "description": "Parasitize CSS to JSX",
+  "version": "0.0.6",
+  "description": "Parasitize CSS to JSX for migi",
   "maintainers": [
     {
       "name": "army8735",
@@ -17,8 +17,7 @@
   },
   "keywords": [
     "javascript",
-    "user interface",
-    "mvvm"
+    "serialize css"
   ],
   "author": "army8735",
   "license": "MIT",
