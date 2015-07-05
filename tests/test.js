@@ -117,17 +117,22 @@ describe('simple', function() {
   it('*', function() {
     var s = '*{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"*":{"_v":[[0,"margin:0"]],"_p":1}});
+    expect(res).to.eql({"_*":true,"*":{"_v":[[0,"margin:0"]],"_p":1}});
   });
   it('nest *', function() {
     var s = 'div *{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"*":{"div":{"_v":[[0,"margin:0"]],"_p":2}},"_d":1});
+    expect(res).to.eql({"_*":true,"*":{"div":{"_v":[[0,"margin:0"]],"_p":2}},"_d":1});
   });
   it(',', function() {
     var s = 'div,a{margin:0}';
     var res = jaw.parse(s);
     expect(res).to.eql({"div":{"_v":[[0,"margin:0"]],"_p":1},"a":{"_v":[[0,"margin:0"]],"_p":1}});
+  });
+  it(',*', function() {
+    var s = 'div,*{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"div":{"_v":[[0,"margin:0"]],"_p":1},"_*":true,"*":{"_v":[[0,"margin:0"]],"_p":1}});
   });
   it('both tag/class/id', function() {
     var s = '*.a#b{margin:0}';

@@ -88,6 +88,9 @@ function record(sel, idx, styles, res) {
           }
           s = list.join('');
         }
+        else if(s == '*') {
+          now['_*'] = true;
+        }
         now[s] = now[s] || {};
         now = now[s];
         break;
