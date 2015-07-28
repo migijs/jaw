@@ -1,6 +1,6 @@
 {
   "name": "jaw",
-  "version": "0.1.0",
+  "version": "0.2.0-1",
   "description": "Parasitize CSS to JSX for migi",
   "maintainers": [
     {
@@ -17,7 +17,8 @@
   },
   "keywords": [
     "javascript",
-    "serialize css"
+    "serialize css",
+    "migi"
   ],
   "author": "army8735",
   "license": "MIT",
@@ -29,8 +30,7 @@
     }
   },
   "dependencies": {
-    "es6-shim": "*",
-    "homunculus": "~0.9.8"
+    "homunculus": "~0.10.0"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
@@ -41,24 +41,12 @@
     "gulp-util": "^3.0.1",
     "mocha": "^2.2.4",
     "mocha-lcov-reporter": "^0.0.2",
-    "through2": "^0.6.1",
+    "through2": "^2.0.0",
     "jsdc": "^0.6.7"
   },
   "main": "./index",
   "engines": {
-    "node": ">= 0.10.0"
-  },
-  "spm": {
-    "main": "./index.js",
-    "output": [
-      "./index.js"
-    ],
-    "build": {
-      "global": {
-        "homunculus": "homunculus"
-      }
-    },
-    "buildArgs": "--standalone"
+    "node": ">= 0.12.0"
   },
   "readmeFilename": "README.md"
 }

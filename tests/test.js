@@ -57,22 +57,22 @@ describe('simple', function() {
   it('nest', function() {
     var s = 'div a{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"]],"_p":2}},"_d":1});
+    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"]],"_p":2}}});
   });
   it('nest with single', function() {
     var s = 'div a{margin:0}a{padding:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"]],"_p":2},"_v":[[1,"padding:0"]],"_p":1},"_d":1});
+    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"]],"_p":2},"_v":[[1,"padding:0"]],"_p":1}});
   });
   it('repeat nest', function() {
     var s = 'div a{margin:0}div a{padding:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"],[1,"padding:0"]],"_p":2}},"_d":1});
+    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"],[1,"padding:0"]],"_p":2}}});
   });
   it('double nest', function() {
     var s = 'div a{margin:0}div span{padding:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"]],"_p":2}},"span":{"div":{"_v":[[1,"padding:0"]],"_p":2}},"_d":1});
+    expect(res).to.eql({"a":{"div":{"_v":[[0,"margin:0"]],"_p":2}},"span":{"div":{"_v":[[1,"padding:0"]],"_p":2}}});
   });
   it('#id', function() {
     var s = '#id{margin:0}';
@@ -87,7 +87,7 @@ describe('simple', function() {
   it('nest .class', function() {
     var s = '.b .c{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({".c":{".b":{"_v":[[0,"margin:0"]],"_p":20}},"_d":1});
+    expect(res).to.eql({".c":{".b":{"_v":[[0,"margin:0"]],"_p":20}}});
   });
   it('multi .class', function() {
     var s = '.b.a.c{margin:0}';
@@ -112,7 +112,7 @@ describe('simple', function() {
   it('long nest', function() {
     var s = 'body .test #id div a{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"div":{"#id":{".test":{"body":{"_v":[[0,"margin:0"]],"_p":113}},"_d":1},"_d":2},"_d":3},"_d":4});
+    expect(res).to.eql({"a":{"div":{"#id":{".test":{"body":{"_v":[[0,"margin:0"]],"_p":113}}}}}});
   });
   it('*', function() {
     var s = '*{margin:0}';
@@ -122,7 +122,7 @@ describe('simple', function() {
   it('nest *', function() {
     var s = 'div *{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*":true,"*":{"div":{"_v":[[0,"margin:0"]],"_p":2}},"_d":1});
+    expect(res).to.eql({"_*":true,"*":{"div":{"_v":[[0,"margin:0"]],"_p":2}}});
   });
   it(',', function() {
     var s = 'div,a{margin:0}';
@@ -137,32 +137,32 @@ describe('simple', function() {
   it('both tag/class/id', function() {
     var s = '*.a#b{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.#":true,"*.a#b":{"_v":[[0,"margin:0"]],"_p":111}});
+    expect(res).to.eql({"_*":true,"_*.#":true,"*.a#b":{"_v":[[0,"margin:0"]],"_p":111}});
   });
   it('*/class', function() {
     var s = '*.a{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.":true,"*.a":{"_v":[[0,"margin:0"]],"_p":11}});
+    expect(res).to.eql({"_*":true,"_*.":true,"*.a":{"_v":[[0,"margin:0"]],"_p":11}});
   });
   it('*/id', function() {
     var s = '*#a{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*#":true,"*#a":{"_v":[[0,"margin:0"]],"_p":101}});
+    expect(res).to.eql({"_*":true,"_*#":true,"*#a":{"_v":[[0,"margin:0"]],"_p":101}});
   });
   it('nest */class', function() {
     var s = 'div *.a{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.":true,"*.a":{"div":{"_v":[[0,"margin:0"]],"_p":12}},"_d":1});
+    expect(res).to.eql({"_*":true,"_*.":true,"*.a":{"div":{"_v":[[0,"margin:0"]],"_p":12}}});
   });
   it('nest */id', function() {
     var s = 'div *#a{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*#":true,"*#a":{"div":{"_v":[[0,"margin:0"]],"_p":102}},"_d":1});
+    expect(res).to.eql({"_*":true,"_*#":true,"*#a":{"div":{"_v":[[0,"margin:0"]],"_p":102}}});
   });
   it('nest tag/class/id', function() {
     var s = 'div *.a#b{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.#":true,"*.a#b":{"div":{"_v":[[0,"margin:0"]],"_p":112}},"_d":1});
+    expect(res).to.eql({"_*":true,"_*.#":true,"*.a#b":{"div":{"_v":[[0,"margin:0"]],"_p":112}}});
   });
 });
 
@@ -205,22 +205,22 @@ describe(':pseudo', function() {
   it('long', function() {
     var s = 'div p a:hover{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"_:":[[["hover"],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":4}},"_d":1}]]}});
+    expect(res).to.eql({"a":{"_:":[[["hover"],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":4}}}]]}});
   });
   it('*.', function() {
     var s = '*.a:hover{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.":true,"*.a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":12}]]}});
+    expect(res).to.eql({"_*":true,"_*.":true,"*.a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":12}]]}});
   });
   it('*#', function() {
     var s = '*#a:hover{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*#":true,"*#a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":102}]]}});
+    expect(res).to.eql({"_*":true,"_*#":true,"*#a":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":102}]]}});
   });
   it('*.#', function() {
     var s = '*.a#b:hover{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.#":true,"*.a#b":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":112}]]}});
+    expect(res).to.eql({"_*":true,"_*.#":true,"*.a#b":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":112}]]}});
   });
 });
 
@@ -263,7 +263,7 @@ describe('attr', function() {
   it('long', function() {
     var s = 'div p a[href$="#"]{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"a":{"_[":[[[["href","$=","#"]],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":13}},"_d":1}]]}});
+    expect(res).to.eql({"a":{"_[":[[[["href","$=","#"]],{"p":{"div":{"_v":[[0,"margin:0"]],"_p":13}}}]]}});
   });
   it('*.', function() {
     var s = '*.a[attr]{margin:0}';

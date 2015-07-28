@@ -10,7 +10,7 @@ function parse(node) {
   node.leaves().forEach(function(leaf, i) {
     styleset(leaf, i, res);
   });
-  depth(res);
+  //depth(res);
   return res;
 }
 
@@ -52,275 +52,93 @@ function style(node) {
 
 function record(sel, idx, styles, res) {
   var _p = 0;
-  var now = res;
   for(var i = sel.length - 1; i >= 0; i--) {
+    var temp = {
+      s: [],
+      a: [],
+      p: []
+    };
     var t = sel[i];
     var s = t.content();
     _p += priority(t, s);
     switch(t.type()) {
       case Token.SELECTOR:
-        var prev = t.prev();
-        if(prev && prev.type() == Token.SELECTOR) {
-          var list = [s];
-          do {
-            s = prev.content();
-            list.push(s);
-            _p += priority(prev, s);
-            prev = prev.prev();
-            i--;
-          }
-          while(prev && prev.type() == Token.SELECTOR);
-          sort(list, function(a, b) {
-            return a != '*' && a < b || b == '*';
-          });
-          var star = list[0] == '*';
-          //*开头有几种组合，记录之
-          if(star) {
-            if(list.length > 2) {
-              now['_*.#'] = true;
-            }
-            else if(list[1][0] == '.') {
-              now['_*.'] = true;
-            }
-            else {
-              now['_*#'] = true;
-            }
-          }
-          s = list.join('');
-        }
-        else if(s == '*') {
-          now['_*'] = true;
-        }
-        now[s] = now[s] || {};
-        now = now[s];
+        temp.s.push(s);
         break;
       case Token.PSEUDO:
-        var list = [s.replace(/^:+/, '')];
-        var prev = t.prev();
-        while(prev && prev.type() == Token.PSEUDO) {
-          _p += priority(prev);
-          list.push(prev.content().replace(/^:+/, ''));
-          prev = prev.prev();
-          i--;
-        }
-        //省略*
-        if(!prev || prev.type() != Token.SELECTOR) {
-          now['_*'] = true;
-          now['*'] = now['*'] || {};
-          now = now['*'];
-        }
-        else if(prev) {
-          var selTemp = [];
-          s = prev.content();
-          selTemp.push(s);
-          _p += priority(prev, s);
-          prev = prev.prev();
-          //可能有多个tag.class#id:pseudo
-          while(prev && prev.type() == Token.SELECTOR) {
-            s = prev.content();
-            selTemp.push(s);
-            _p += priority(prev, s);
-            prev = prev.prev();
-            i--;
-          }
-          sort(selTemp, function(a, b) {
-            return a != '*' && a < b || b == '*';
-          });
-          var star = selTemp[0] == '*';
-          //*开头有几种组合，记录之
-          if(star) {
-            if(selTemp.length > 2) {
-              now['_*.#'] = true;
-            }
-            else if(selTemp.length > 1) {
-              if(selTemp[1][0] == '.') {
-                now['_*.'] = true;
-              }
-              else {
-                now['_*#'] = true;
-              }
-            }
-            else {
-              now['_*'] = true;
-            }
-          }
-          s = selTemp.join('');
-          now[s] = now[s] || {};
-          now = now[s];
-          i--;
-        }
-        //伪类都存在_:对象下，是个数组
-        //每项为长度2的数组，第1个是伪类组合，第2个是对应的值
-        now['_:'] = now['_:'] || [];
-        var pseudos = now['_:'];
-        var pseudo = [];
-        list.forEach(function(item) {
-          //防止多次重复
-          if(pseudo.indexOf(item) == -1) {
-            pseudo.push(item);
-          }
-        });
-        //排序后比对，可能重复，合并之如a:hover{...}a:hover{...}会生成2个hover数组
-        sort(pseudo, function(a, b) {
-          return a < b;
-        });
-        var isExist = -1;
-        for(var j = 0, len = pseudos.length; j < len; j++) {
-          if(pseudos[j][0].join(',') == pseudo.join(',')) {
-            isExist = j;
-            break;
-          }
-        }
-        if(isExist > -1) {
-          now = pseudos[isExist][1];
-        }
-        else {
-          var arr = [];
-          arr.push(pseudo);
-          now = {};
-          arr.push(now);
-          pseudos.push(arr);
-        }
+        temp.p.push(s.replace(/^:+/, ''));
         break;
       case Token.SIGN:
         switch(s) {
-          case '>':
-          case '+':
-          case '~':
-            now['_' + s] = now['_' + s] || {};
-            now = now['_' + s];
-            i--;
-            var prev = t.prev();
-            s = prev.content();
-            now[s] = now[s] || {};
-            now = now[s];
-            _p += priority(prev, s);
-            break;
           case ']':
-            //TODO: 选择器和属性很特殊，可以交叉：div[attr].class[attr]
-            var list = [];
             var item;
-            var prev = t;
-            //可能有多个属性
-            while(prev && prev.content() == ']') {
+            i--;
+            item = [];
+            t = t.prev();
+            while(t) {
               i--;
-              item = [];
-              prev = prev.prev();
-              while(prev) {
-                i--;
-                s = prev.content();
-                prev = prev.prev();
-                if(s == '[') {
-                  break;
-                }
-                s = s.replace(/^(['"'])(.*)\1/, '$2');
-                item.unshift(s);
-              }
-              list.push({
-                v: item,
-                s: item.join('')
-              });
-              _p += 10;
-            }
-            //省略*
-            if(!prev || prev.type() != Token.SELECTOR) {
-              now['_*'] = true;
-              now['*'] = now['*'] || {};
-              now = now['*'];
-            }
-            else {
-              var selTemp = [];
-              s = prev.content();
-              selTemp.push(s);
-              _p += priority(prev, s);
-              prev = prev.prev();
-              while(prev && prev.type() == Token.SELECTOR) {
-                s = prev.content();
-                selTemp.push(s);
-                _p += priority(prev, s);
-                prev = prev.prev();
-                i--;
-              }
-              sort(selTemp, function(a, b) {
-                return a != '*' && a < b || b == '*';
-              });
-              var star = selTemp[0] == '*';
-              //*开头有几种组合，记录之
-              if(star) {
-                if(selTemp.length > 2) {
-                  now['_*.#'] = true;
-                }
-                else if(selTemp.length > 1) {
-                  if(selTemp[1][0] == '.') {
-                    now['_*.'] = true;
-                  }
-                  else {
-                    now['_*#'] = true;
-                  }
-                }
-                else {
-                  now['_*'] = true;
-                }
-              }
-              s = selTemp.join('');
-              now[s] = now[s] || {};
-              now = now[s];
-            }
-            //属性都存在_[对象下，是个数组
-            //每项为长度2的数组，第1个是属性组合，第2个是对应的值
-            now['_['] = now['_['] || [];
-            var attrs = now['_['];
-            var attr = [];
-            var attrTemp = {};
-            list.forEach(function(item) {
-              if(!attrTemp.hasOwnProperty(item.s)) {
-                attr.push(item.v);
-                attrTemp[item.s] = true;
-              }
-            });
-            //排序后比对，可能重复
-            sort(list, function(a, b) {
-              return a.s < b.s;
-            });
-            var isExist = -1;
-            for(var j = 0, len = attrs.length; j < len; j++) {
-              var s1 = '';
-              s1 += attrs[j][0].map(function(item) {
-                return item.join('');
-              });
-              var s2 = '';
-              s2 += attr.map(function(item) {
-                return item.join('');
-              });
-              if(s1 == s2) {
-                isExist = j;
+              s = t.content();
+              if(s == '[') {
                 break;
               }
+              t = t.prev();
+              s = s.replace(/^(['"'])(.*)\1/, '$2');
+              item.unshift(s);
             }
-            if(isExist > -1) {
-              now = attrs[isExist][1];
-            }
-            else {
-              var arr = [];
-              arr.push(attr);
-              now = {};
-              arr.push(now);
-              attrs.push(arr);
-            }
+            temp.a.push({
+              v: item,
+              s: item.join('')
+            });
             break;
-          //TODO: CSS3伪类
-          case ')':
-            break;
-          //TODO: attr和pseudo混杂的情况
         }
         break;
     }
+    t = t.prev();
+    while(t && !isSplit(t)) {
+      s = t.content();
+      _p += priority(t, s);
+      switch(t.type()) {
+        case Token.SELECTOR:
+          temp.s.push(s);
+          break;
+        case Token.PSEUDO:
+          temp.p.push(s.replace(/^:+/, ''));
+          break;
+        case Token.SIGN:
+          switch(s) {
+            case ']':
+              var item;
+              i--;
+              item = [];
+              t = t.prev();
+              while(t) {
+                i--;
+                s = t.content();
+                if(s == '[') {
+                  break;
+                }
+                t = t.prev();
+                s = s.replace(/^(['"'])(.*)\1/, '$2');
+                item.unshift(s);
+              }
+              temp.a.push({
+                v: item,
+                s: item.join('')
+              });
+              break;
+          }
+          break;
+      }
+      t = t.prev();
+      i--;
+    }
+    res = save(temp, res);
   }
-  now._v = now._v || [];
+  res._v = res._v || [];
   styles.forEach(function(style) {
-    now._v.push([idx, style]);
+    res._v.push([idx, style]);
   });
-  now._p = _p;
+  res._p = _p;
 }
 
 function priority(token, s) {
@@ -335,9 +153,13 @@ function priority(token, s) {
       return 1;
     case Token.PSEUDO:
       return 1;
-    default:
-      return 0;
+    case Token.SIGN:
+      if(s == ']') {
+        return 10;
+      }
+      break;
   }
+  return 0;
 }
 
 function depth(res) {
@@ -372,6 +194,123 @@ function depth(res) {
   else {
     return 0;
   }
+}
+
+function isSplit(token) {
+  if(token.type() == Token.BLANK) {
+    return true;
+  }
+  if(token.type() == Token.LINE) {
+    return true;
+  }
+  if(token.type() == Token.SIGN) {
+    return ['>', '+', '~', '{', '}', ','].indexOf(token.content()) > -1;
+  }
+  return false;
+}
+
+function save(temp, res) {
+  if(!temp.s.length) {
+    temp.s.push('*');
+  }
+  //selector按name/class/id排序
+  sort(temp.s, function(a, b) {
+    return a != '*' && a < b || b == '*';
+  });
+  var star = temp.s[0] == '*';
+  //*开头有几种组合，记录之
+  if(star) {
+    res['_*'] = true;
+    if(temp.s.length > 1) {
+      if(temp.s.length > 2) {
+        res['_*.#'] = true;
+      }
+      else if(temp.s[1][0] == '.') {
+        res['_*.'] = true;
+      }
+      else {
+        res['_*#'] = true;
+      }
+    }
+  }
+  var s = temp.s.join('');
+  res[s] = res[s] || {};
+  res = res[s];
+  //伪类
+  if(temp.p.length) {
+    res['_:'] = res['_:'] || [];
+    var pseudos = res['_:'];
+    var pseudo = [];
+    temp.p.forEach(function(item) {
+      //防止多次重复
+      if(pseudo.indexOf(item) == -1) {
+        pseudo.push(item);
+      }
+    });
+    //排序后比对，可能重复，合并之如a:hover{...}a:hover{...}会生成2个hover数组
+    sort(pseudo, function(a, b) {
+      return a < b;
+    });
+    var isExist = -1;
+    for(var j = 0, len = pseudos.length; j < len; j++) {
+      if(pseudos[j][0].join(',') == pseudo.join(',')) {
+        isExist = j;
+        break;
+      }
+    }
+    if(isExist > -1) {
+      res = pseudos[isExist][1];
+    }
+    else {
+      var arr = [];
+      arr.push(pseudo);
+      res = {};
+      arr.push(res);
+      pseudos.push(arr);
+    }
+  }
+  //属性
+  if(temp.a.length) {
+    res['_['] = res['_['] || [];
+    var attrs = res['_['];
+    var attr = [];
+    //去重并排序
+    sort(temp.a, function(a, b) {
+      return a.s < b.s;
+    });
+    var hash = {};
+    temp.a.forEach(function(item) {
+      if(!hash.hasOwnProperty(item.s)) {
+        attr.push(item.v);
+      }
+    });
+    var isExist = -1;
+    var join = '';
+    join += attr.map(function(item) {
+      return item.join('');
+    });
+    for(var j = 0, len = attrs.length; j < len; j++) {
+      var s1 = '';
+      s1 += attrs[j][0].map(function(item) {
+        return item.join('');
+      });
+      if(s1 == join) {
+        isExist = j;
+        break;
+      }
+    }
+    if(isExist > -1) {
+      res = attrs[isExist][1];
+    }
+    else {
+      var arr = [];
+      arr.push(attr);
+      res = {};
+      arr.push(res);
+      attrs.push(arr);
+    }
+  }
+  return res;
 }
 
 exports["default"]=parse;
