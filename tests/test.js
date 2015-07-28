@@ -321,6 +321,11 @@ describe('mix', function() {
     var res = jaw.parse(s);
     expect(res).to.eql({".a#id":{"_[":[[[["title"],["class","=","c"],["attr"]],{"_v":[[0,"margin:0"]],"_p":140}]]}});
   });
+  it('*', function() {
+    var s = '[attr]:hover[attr2]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"_*":true,"*":{"_:":[[["hover"],{"_[":[[[["attr2"],["attr"]],{"_v":[[0,"margin:0"]],"_p":21}]]}]]}});
+  });
 });
 
 describe('join', function() {
