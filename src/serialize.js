@@ -52,6 +52,7 @@ function style(node) {
 
 function record(sel, idx, styles, res) {
   var _p = 0;
+  outer:
   for(var i = sel.length - 1; i >= 0; i--) {
     var temp = {
       s: [],
@@ -76,11 +77,11 @@ function record(sel, idx, styles, res) {
             item = [];
             t = t.prev();
             while(t) {
-              i--;
               s = t.content();
               if(s == '[') {
                 break;
               }
+              i--;
               t = t.prev();
               s = s.replace(/^(['"'])(.*)\1/, '$2');
               item.unshift(s);
@@ -90,6 +91,13 @@ function record(sel, idx, styles, res) {
               s: item.join('')
             });
             break;
+          case '+':
+          case '>':
+          case '~':
+            s = '_' + s;
+            res[s] = res[s] || {};
+            res = res[s];
+            continue outer;
         }
         break;
     }
@@ -112,11 +120,11 @@ function record(sel, idx, styles, res) {
               item = [];
               t = t.prev();
               while(t) {
-                i--;
                 s = t.content();
                 if(s == '[') {
                   break;
                 }
+                i--;
                 t = t.prev();
                 s = s.replace(/^(['"'])(.*)\1/, '$2');
                 item.unshift(s);

@@ -268,17 +268,17 @@ describe('attr', function() {
   it('*.', function() {
     var s = '*.a[attr]{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.":true,"*.a":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":21}]]}});
+    expect(res).to.eql({"_*":true,"_*.":true,"*.a":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":21}]]}});
   });
   it('*#', function() {
     var s = '*#a[attr]{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*#":true,"*#a":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":111}]]}});
+    expect(res).to.eql({"_*":true,"_*#":true,"*#a":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":111}]]}});
   });
   it('*.#', function() {
     var s = '*.a#b[attr]{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"_*.#":true,"*.a#b":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":121}]]}});
+    expect(res).to.eql({"_*":true,"_*.#":true,"*.a#b":{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":121}]]}});
   });
 });
 
@@ -301,12 +301,25 @@ describe('relation', function() {
   it('*', function() {
     var s = '*+div{margin:0}';
     var res = jaw.parse(s);
-    expect(res).to.eql({"div":{"_+":{"*":{"_v":[[0,"margin:0"]],"_p":2}}}});
+    expect(res).to.eql({"div":{"_+":{"_*":true,"*":{"_v":[[0,"margin:0"]],"_p":2}}}});
   });
   it('multi', function() {
     var s = 'a+div>.c~span{margin:0}';
     var res = jaw.parse(s);
     expect(res).to.eql({"span":{"_~":{".c":{"_>":{"div":{"_+":{"a":{"_v":[[0,"margin:0"]],"_p":13}}}}}}}});
+  });
+});
+
+describe('mix', function() {
+  it('multi', function() {
+    var s = '.a:hover.b:active.d[attr]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({".d.b.a":{"_:":[[["hover","active"],{"_[":[[[["attr"]],{"_v":[[0,"margin:0"]],"_p":42}]]}]]}});
+  });
+  it('multi 2', function() {
+    var s = '[attr].a[title]#id[class="c"]{margin:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({".a#id":{"_[":[[[["title"],["class","=","c"],["attr"]],{"_v":[[0,"margin:0"]],"_p":140}]]}});
   });
 });
 
