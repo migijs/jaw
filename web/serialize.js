@@ -10,7 +10,6 @@ function parse(node) {
   node.leaves().forEach(function(leaf, i) {
     styleset(leaf, i, res);
   });
-  //depth(res);
   return res;
 }
 
@@ -168,40 +167,6 @@ function priority(token, s) {
       break;
   }
   return 0;
-}
-
-function depth(res) {
-  var keys = Object.keys(res);
-  //_:伪类
-  if(res.hasOwnProperty('_:')) {
-    res['_:'].forEach(function(item) {
-      depth(item[1]);
-    });
-  }
-  //_[属性
-  if(res.hasOwnProperty('_[')) {
-    res['_['].forEach(function(item) {
-      depth(item[1]);
-    });
-  }
-  //普通样式深度
-  keys = keys.filter(function(k) {
-    return k.charAt(0) != '_';
-  });
-  if(keys.length) {
-    var i = 0;
-    keys.forEach(function(k) {
-      var item = res[k];
-      i = Math.max(depth(item), i);
-    });
-    if(i) {
-      res._d = i;
-    }
-    return i + 1;
-  }
-  else {
-    return 0;
-  }
 }
 
 function isSplit(token) {
