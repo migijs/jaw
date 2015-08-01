@@ -8,14 +8,6 @@ describe('api', function() {
   it('#parse', function() {
     expect(jaw.parse).to.be.a(Function);
   });
-  it('tokens', function() {
-    jaw.parse('');
-    expect(jaw.tokens).to.be.a(Array);
-  });
-  it('ast', function() {
-    jaw.parse('');
-    expect(jaw.ast).to.be.a(Object);
-  });
 });
 
 describe('simple', function() {

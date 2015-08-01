@@ -16,12 +16,5 @@ var Node = homunculus.getClass('node', 'css');
     return serialize(this.node);
   }
 
-  var _2={};_2.tokens={};_2.tokens.get =function() {
-    return this.ast ? this.parser.lexer.tokens() : null;
-  }
-  _2.ast={};_2.ast.get =function() {
-    return this.node;
-  }
-Object.keys(_2).forEach(function(k){Object.defineProperty(Jaw.prototype,k,_2[k])});
 
 exports["default"]=new Jaw();});
