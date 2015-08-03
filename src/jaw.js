@@ -15,6 +15,13 @@ class Jaw {
     this.node = this.parser.parse(code);
     return serialize(this.node);
   }
+
+  tokens() {
+    return this.ast ? this.parser.lexer.tokens() : null;
+  }
+  ast() {
+    return this.node;
+  }
 }
 
 export default new Jaw();
