@@ -82,7 +82,7 @@ function record(sel, idx, styles, res) {
               }
               i--;
               t = t.prev();
-              s = s.replace(/^(['"'])(.*)\1/, '$2');
+              s = s.replace(/^(['"])(.*)\1$/, '$2');
               item.unshift(s);
             }
             temp.a.push({
