@@ -1,6 +1,6 @@
-define(function(require, exports, module){var homunculus=function(){var _0=require('homunculus');return _0.hasOwnProperty("default")?_0["default"]:_0}();
-var join=function(){var _1=require('./join');return _1.hasOwnProperty("default")?_1["default"]:_1}();
-var sort=function(){var _2=require('./sort');return _2.hasOwnProperty("default")?_2["default"]:_2}();
+define(function(require, exports, module){var homunculus=function(){var _0=require('homunculus');return _0.hasOwnProperty("homunculus")?_0.homunculus:_0.hasOwnProperty("default")?_0.default:_0}();
+var join=function(){var _1=require('./join');return _1.hasOwnProperty("join")?_1.join:_1.hasOwnProperty("default")?_1.default:_1}();
+var sort=function(){var _2=require('./sort');return _2.hasOwnProperty("sort")?_2.sort:_2.hasOwnProperty("default")?_2.default:_2}();
 
 var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
@@ -50,7 +50,7 @@ function style(node) {
 }
 
 function record(sel, idx, styles, res) {
-  var _p = 0;
+  var _p = [0, 0, 0];
   outer:
   for(var i = sel.length - 1; i >= 0; i--) {
     var temp = {
@@ -59,8 +59,8 @@ function record(sel, idx, styles, res) {
       p: []
     };
     var t = sel[i];
-    var s = t.content();
-    _p += priority(t, s);
+    var s = t.content()
+    priority(t, s, _p);
     switch(t.type()) {
       case Token.SELECTOR:
         temp.s.push(s);
@@ -103,7 +103,7 @@ function record(sel, idx, styles, res) {
     t = t.prev();
     while(t && !isSplit(t)) {
       s = t.content();
-      _p += priority(t, s);
+      priority(t, s, _p);
       switch(t.type()) {
         case Token.SELECTOR:
           temp.s.push(s);
@@ -148,25 +148,28 @@ function record(sel, idx, styles, res) {
   res._p = _p;
 }
 
-function priority(token, s) {
+function priority(token, s, p) {
   switch(token.type()) {
     case Token.SELECTOR:
       if(s.charAt(0) == '#') {
-        return 100;
+        p[0]++;
       }
       else if(s.charAt(0) == '.') {
-        return 10;
+        p[1]++;
       }
-      return 1;
+      else {
+        p[2]++;
+      }
+      break;
     case Token.PSEUDO:
-      return 1;
+      p[2]++;
+      break;
     case Token.SIGN:
       if(s == ']') {
-        return 10;
+        p[1]++;
       }
       break;
   }
-  return 0;
 }
 
 function isSplit(token) {
@@ -286,4 +289,4 @@ function save(temp, res) {
   return res;
 }
 
-exports["default"]=parse;});
+exports.default=parse;});
