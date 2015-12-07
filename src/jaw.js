@@ -10,10 +10,10 @@ class Jaw {
     this.node = null;
   }
 
-  parse(code) {
+  parse(code, option = {}) {
     this.parser = homunculus.getParser('css');
     this.node = this.parser.parse(code);
-    return serialize(this.node);
+    return serialize(this.node, option);
   }
 
   tokens() {

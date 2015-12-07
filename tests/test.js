@@ -327,3 +327,11 @@ describe('join', function() {
     expect(res).to.eql({"a":{"_v":[[0,"margin:0"],[0,"padding:0"]],"_p":[0,0,1]}});
   });
 });
+
+describe('option', function() {
+  it('noPriority', function() {
+    var s = 'a{}';
+    var res = jaw.parse(s, { noPriority: true });
+    expect(res).to.eql({"a":{"_v":[]}});
+  });
+});

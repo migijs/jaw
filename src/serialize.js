@@ -5,19 +5,19 @@ import sort from './sort';
 var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
 
-function parse(node) {
+function parse(node, option) {
   var res = {};
   node.leaves().forEach(function(leaf, i) {
-    styleset(leaf, i, res);
+    styleset(leaf, i, res, option);
   });
   return res;
 }
 
-function styleset(node, i, res) {
+function styleset(node, i, res, option) {
   var sels = selectors(node.first());
   var styles = block(node.last());
   sels.forEach(function(sel) {
-    record(sel, i, styles, res);
+    record(sel, i, styles, res, option);
   });
 }
 function selectors(node) {
@@ -49,7 +49,7 @@ function style(node) {
   return s;
 }
 
-function record(sel, idx, styles, res) {
+function record(sel, idx, styles, res, option) {
   var _p = [0, 0, 0];
   outer:
   for(var i = sel.length - 1; i >= 0; i--) {
@@ -59,7 +59,7 @@ function record(sel, idx, styles, res) {
       p: []
     };
     var t = sel[i];
-    var s = t.content()
+    var s = t.content();
     priority(t, s, _p);
     switch(t.type()) {
       case Token.SELECTOR:
@@ -145,7 +145,9 @@ function record(sel, idx, styles, res) {
   styles.forEach(function(style) {
     res._v.push([idx, style]);
   });
-  res._p = _p;
+  if(!option.noPriority) {
+    res._p = _p;
+  }
 }
 
 function priority(token, s, p) {

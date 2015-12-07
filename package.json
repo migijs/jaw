@@ -1,6 +1,6 @@
 {
   "name": "jaw",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Parasitize CSS to JSX for migi",
   "maintainers": [
     {
