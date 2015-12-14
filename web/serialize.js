@@ -6,9 +6,13 @@ var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
 
 function parse(node, option) {
-  var res = {};
+  var res = {
+    default: {}
+  };
   node.leaves().forEach(function(leaf, i) {
-    styleset(leaf, i, res, option);
+    if(leaf.name() == Node.STYLESET) {
+      styleset(leaf, i, res.default, option);
+    }
   });
   return res;
 }
