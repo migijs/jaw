@@ -198,8 +198,8 @@
         res = JSON.stringify(res);
         console.log(res);
         res = JSONFormat(res);
-        var ast = jaw.ast;
-        var tokens = jaw.tokens;
+        var ast = jaw.ast();
+        var tokens = jaw.tokens();
         var pre = node.parentNode;
         var ncode = document.createElement('code');
         var npre = document.createElement('pre');
