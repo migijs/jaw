@@ -13,8 +13,53 @@ function parse(node, option) {
     if(leaf.name() == Node.STYLESET) {
       styleset(leaf, i, res.default, option);
     }
+    else if(leaf.name() == Node.MEDIA) {
+      res.media = res.media || [];
+      var item = {};
+
+      var qlist = leaf.leaf(1);
+      qlist.leaves().forEach(function(leaf) {
+        if(leaf.name() == Node.MEDIAQUERY) {
+          query(leaf, item);
+        }
+      });
+
+      var block = leaf.last();
+      var leaves = block.leaves();
+      if(leaves.length > 2) {
+        var style = {};
+        for(var i = 1, len = leaves.length - 1; i < len; i++) {
+          styleset(leaves[i], i, style, option);
+        }
+        item.style = style;
+      }
+      if(item.style) {
+        res.media.push(item);
+      }
+    }
   });
   return res;
+}
+
+function query(node, item) {
+  var leaves = node.leaves();
+  var query = [];
+  leaves.forEach(function(leaf) {
+    if(leaf.name() == Node.EXPR) {
+      var expr = [];
+      leaf.leaves().forEach(function(item) {
+        if(item.name() == Node.KEY || item.name() == Node.VALUE) {
+          expr.push(join(item, true));
+        }
+      });
+      //可能只有key或者k/v都有，以String/Array格式区分
+      if(expr.length) {
+        query.push(expr.length > 1 ? expr : expr[0]);
+      }
+    }
+  });
+  item.query = item.query || [];
+  item.query.push(query);
 }
 
 function styleset(node, i, res, option) {
