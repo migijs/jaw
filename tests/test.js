@@ -214,6 +214,21 @@ describe(':pseudo', function() {
     var res = jaw.parse(s);
     expect(res).to.eql({"default":{"_*":true,"_*.#":true,"*.a#b":{"_:":[[["hover"],{"_v":[[0,"margin:0"]],"_p":[1,1,2]}]]}}});
   });
+  it('(n)', function() {
+    var s = 'a:nth-of-type(3){}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"default":{"a":{"_:":[[["nth-of-type(3)"],{"_v":[],"_p":[0,0,2]}]]}}});
+  });
+  it('(odd)', function() {
+    var s = 'a:nth-of-type(odd){}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"default":{"a":{"_:":[[["nth-of-type(odd)"],{"_v":[],"_p":[0,0,2]}]]}}});
+  });
+  it('(n+)', function() {
+    var s = 'a:nth-of-type(2n+1){}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"default":{"a":{"_:":[[["nth-of-type(2n+1)"],{"_v":[],"_p":[0,0,2]}]]}}});
+  });
 });
 
 describe('attr', function() {

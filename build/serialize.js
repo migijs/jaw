@@ -104,7 +104,6 @@ function style(node) {
 
 function record(sel, idx, styles, res, option) {
   var _p = [0, 0, 0];
-  outer:
   for(var i = sel.length - 1; i >= 0; i--) {
     var temp = {
       s: [],
@@ -119,14 +118,24 @@ function record(sel, idx, styles, res, option) {
         temp.s.push(s);
         break;
       case Token.PSEUDO:
-        temp.p.push(s.replace(/^:+/, ''));
+        var s2 = s.replace(/^:+/, '');
+        if(sel[i].content() == '(') {
+          s2 += '(';
+          for(var j = i + 1; j < sel.length; j++) {
+            if(sel[j].content() == ')') {
+              s2 += ')';
+              break;
+            }
+            s2 += sel[j].content();
+          }
+        }
+        temp.p.push(s2);
         break;
       case Token.SIGN:
         switch(s) {
           case ']':
-            var item;
+            var item = [];
             i--;
-            item = [];
             t = t.prev();
             while(t) {
               s = t.content();
@@ -149,7 +158,20 @@ function record(sel, idx, styles, res, option) {
             s = '_' + s;
             res[s] = res[s] || {};
             res = res[s];
-            continue outer;
+            continue;
+          //忽略掉()，因为其出现在:nth-child(n)中
+          case ')':
+            i--;
+            t = t.prev();
+            while(t) {
+              s = t.content();
+              if(s == '(') {
+                break;
+              }
+              i--;
+              t = t.prev();
+            }
+            break;
         }
         break;
     }
@@ -162,14 +184,24 @@ function record(sel, idx, styles, res, option) {
           temp.s.push(s);
           break;
         case Token.PSEUDO:
-          temp.p.push(s.replace(/^:+/, ''));
+          var s2 = s.replace(/^:+/, '');
+          if(sel[i].content() == '(') {
+            s2 += '(';
+            for(var j = i + 1; j < sel.length; j++) {
+              if(sel[j].content() == ')') {
+                s2 += ')';
+                break;
+              }
+              s2 += sel[j].content();
+            }
+          }
+          temp.p.push(s2);
           break;
         case Token.SIGN:
           switch(s) {
             case ']':
-              var item;
+              var item = [];
               i--;
-              item = [];
               t = t.prev();
               while(t) {
                 s = t.content();
@@ -178,13 +210,33 @@ function record(sel, idx, styles, res, option) {
                 }
                 i--;
                 t = t.prev();
-                s = s.replace(/^(['"'])(.*)\1/, '$2');
+                s = s.replace(/^(['"])(.*)\1$/, '$2');
                 item.unshift(s);
               }
               temp.a.push({
                 v: item,
                 s: item.join('')
               });
+              break;
+            case '+':
+            case '>':
+            case '~':
+              s = '_' + s;
+              res[s] = res[s] || {};
+              res = res[s];
+              continue;
+            //忽略掉()，因为其出现在:nth-child(n)中
+            case ')':
+              i--;
+              t = t.prev();
+              while(t) {
+                s = t.content();
+                if(s == '(') {
+                  break;
+                }
+                i--;
+                t = t.prev();
+              }
               break;
           }
           break;
