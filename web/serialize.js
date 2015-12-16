@@ -68,8 +68,9 @@ function query(node, item) {
 function styleset(node, res, option) {
   var sels = selectors(node.first());
   var styles = block(node.last());
+  var i = idx++;
   sels.forEach(function(sel) {
-    record(sel, idx++, styles, res, option);
+    record(sel, i, styles, res, option);
   });
 }
 function selectors(node) {
