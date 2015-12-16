@@ -5,13 +5,16 @@ import sort from './sort';
 var Token = homunculus.getClass('token', 'css');
 var Node = homunculus.getClass('node', 'css');
 
+var idx;
+
 function parse(node, option) {
+  idx = 0;
   var res = {
     default: {}
   };
   node.leaves().forEach(function(leaf, i) {
     if(leaf.name() == Node.STYLESET) {
-      styleset(leaf, i, res.default, option);
+      styleset(leaf, res.default, option);
     }
     else if(leaf.name() == Node.MEDIA) {
       res.media = res.media || [];
@@ -29,7 +32,7 @@ function parse(node, option) {
       if(leaves.length > 2) {
         var style = {};
         for(var i = 1, len = leaves.length - 1; i < len; i++) {
-          styleset(leaves[i], i, style, option);
+          styleset(leaves[i], style, option);
         }
         item.style = style;
       }
@@ -62,11 +65,11 @@ function query(node, item) {
   item.query.push(query);
 }
 
-function styleset(node, i, res, option) {
+function styleset(node, res, option) {
   var sels = selectors(node.first());
   var styles = block(node.last());
   sels.forEach(function(sel) {
-    record(sel, i, styles, res, option);
+    record(sel, idx++, styles, res, option);
   });
 }
 function selectors(node) {
