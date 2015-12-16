@@ -335,3 +335,21 @@ describe('option', function() {
     expect(res).to.eql({"default":{"a":{"_v":[]}}});
   });
 });
+
+describe('media query', function() {
+  it('simple', function() {
+    var s = '@media all and(min-device-width:320px){a{margin:0}b{padding:0}}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"default":{},"media":[{"query":[[["min-device-width","320px"]]],"style":{"a":{"_v":[[0,"margin:0"]],"_p":[0,0,1]},"b":{"_v":[[1,"padding:0"]],"_p":[0,0,1]}}}]});
+  });
+  it('multi', function() {
+    var s = '@media all and(min-device-width:320px){a{margin:0}}@media(min-device-height:100px),(width){b{padding:0}}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"default":{},"media":[{"query":[[["min-device-width","320px"]]],"style":{"a":{"_v":[[0,"margin:0"]],"_p":[0,0,1]}}},{"query":[[["min-device-height","100px"]],["width"]],"style":{"b":{"_v":[[1,"padding:0"]],"_p":[0,0,1]}}}]});
+  });
+  it('complex', function() {
+    var s = 'div{color:#000}@media all and(min-device-width:320px){a{margin:0}}b{padding:0}';
+    var res = jaw.parse(s);
+    expect(res).to.eql({"default":{"div":{"_v":[[0,"color:#000"]],"_p":[0,0,1]},"b":{"_v":[[2,"padding:0"]],"_p":[0,0,1]}},"media":[{"query":[[["min-device-width","320px"]]],"style":{"a":{"_v":[[1,"margin:0"]],"_p":[0,0,1]}}}]});
+  });
+});
