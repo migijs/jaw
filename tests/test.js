@@ -354,10 +354,20 @@ describe('option', function() {
     var res = jaw.parse(s, { noValue: true });
     expect(res).to.eql({"default":{"a":{"_v":true,"_p":[0,0,1]}}});
   });
+  it('noMedia', function() {
+    var s = 'a{color:#FFF}';
+    var res = jaw.parse(s, { noMedia: true });
+    expect(res).to.eql({"a":{"_v":[[0,"color:#FFF"]],"_p":[0,0,1]}});
+  });
   it('noPriority && noValue', function() {
     var s = 'a{color:#FFF}';
     var res = jaw.parse(s, { noPriority: true, noValue: true });
     expect(res).to.eql({"default":{"a":{"_v":true}}});
+  });
+  it('noPriority && noValue && noMedia', function() {
+    var s = 'a{color:#FFF}';
+    var res = jaw.parse(s, { noPriority: true, noValue: true, noMedia: true });
+    expect(res).to.eql({"a":{"_v":true}});
   });
 });
 

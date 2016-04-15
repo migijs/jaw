@@ -11,6 +11,7 @@
     #btn{position:absolute;top:0;right:0;width:50px;z-index:99;}
     .noValue{position:absolute;top:0;right:80px;z-index:99;}
     .noPriority{position:absolute;top:0;right:150px;z-index:99;}
+    .noMedia{position:absolute;top:0;right:220px;z-index:99;}
 
     .jssc .col{margin-left:12px;color:#CCC;cursor:default;}
     .jssc .col em{position:relative;font-style:normal;}
@@ -56,6 +57,7 @@
 <textarea id="ta" autocomplete="off"></textarea>
 <label class="noValue">noValue<input id="noValue" type="checkbox"/></label>
 <label class="noPriority">noPriority<input id="noPriority" type="checkbox"/></label>
+<label class="noMedia">noPriority<input id="noMedia" type="checkbox"/></label>
 <input id="btn" type="button" value="ok"/>
 <pre><code class="brush:css"></code></pre>
 <script src="sea.js"></script>
@@ -198,11 +200,13 @@
       console.clear();
       var noPriority = document.getElementById('noPriority').checked;
       var noValue = document.getElementById('noValue').checked;
+      var noMedia = document.getElementById('noMedia').checked;
       var nodes = Array.prototype.slice.call(document.getElementsByTagName('code'), 0);
       nodes.forEach(function(node, i) {
         var res = jaw.parse(node.textContent || node.innerText || node.firstChild && node.firstChild.nodeValue, {
           noPriority: noPriority,
-          noValue: noValue
+          noValue: noValue,
+          noMedia: noMedia
         });
         res = JSON.stringify(res);
         console.log(res);
