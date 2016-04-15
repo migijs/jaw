@@ -18,7 +18,9 @@ npm install jaw
 https://github.com/migijs/jaw/wiki/%E6%96%87%E6%A1%A3
 
 ## API
-* parse(code:String):JSON 传入要解析的css代码，返回格式化好的json对象
+* parse(code:String, option:Object):JSON 传入要解析的css代码，返回格式化好的json对象，option参数如下
+ * noValaue:Boolean 无需值，在有值的时候_v字段仅为true，如事件代理使用
+ * noPriority:Boolean 无需优先级，json中没有_p字段
 * tokens():Array\<Token> 返回css的token列表
 * ast():Object 返回css的语法树
 

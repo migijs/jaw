@@ -9,6 +9,8 @@
     textarea{position:absolute;top:24px;right:0;padding:5px;width:50%;height:300px;z-index:99;background:#252;border:1px solid #333;opacity:0.1;color:#FFF;font-size:13px;font-family:Consolas,momospace,"宋体","Courier New";border-radius:5px;}
     textarea:hover{opacity:0.8;}
     #btn{position:absolute;top:0;right:0;width:50px;z-index:99;}
+    .noValue{position:absolute;top:0;right:80px;z-index:99;}
+    .noPriority{position:absolute;top:0;right:150px;z-index:99;}
 
     .jssc .col{margin-left:12px;color:#CCC;cursor:default;}
     .jssc .col em{position:relative;font-style:normal;}
@@ -52,6 +54,8 @@
 </head>
 <body>
 <textarea id="ta" autocomplete="off"></textarea>
+<label class="noValue">noValue<input id="noValue" type="checkbox"/></label>
+<label class="noPriority">noPriority<input id="noPriority" type="checkbox"/></label>
 <input id="btn" type="button" value="ok"/>
 <pre><code class="brush:css"></code></pre>
 <script src="sea.js"></script>
@@ -192,9 +196,14 @@
         return out;
       };
       console.clear();
+      var noPriority = document.getElementById('noPriority').checked;
+      var noValue = document.getElementById('noValue').checked;
       var nodes = Array.prototype.slice.call(document.getElementsByTagName('code'), 0);
       nodes.forEach(function(node, i) {
-        var res = jaw.parse(node.textContent || node.innerText || node.firstChild && node.firstChild.nodeValue);
+        var res = jaw.parse(node.textContent || node.innerText || node.firstChild && node.firstChild.nodeValue, {
+          noPriority: noPriority,
+          noValue: noValue
+        });
         res = JSON.stringify(res);
         console.log(res);
         res = JSONFormat(res);

@@ -345,9 +345,19 @@ describe('join', function() {
 
 describe('option', function() {
   it('noPriority', function() {
-    var s = 'a{}';
+    var s = 'a{color:#FFF}';
     var res = jaw.parse(s, { noPriority: true });
-    expect(res).to.eql({"default":{"a":{"_v":[]}}});
+    expect(res).to.eql({"default":{"a":{"_v":[[0,"color:#FFF"]]}}});
+  });
+  it('noValue', function() {
+    var s = 'a{color:#FFF}';
+    var res = jaw.parse(s, { noValue: true });
+    expect(res).to.eql({"default":{"a":{"_v":true,"_p":[0,0,1]}}});
+  });
+  it('noPriority && noValue', function() {
+    var s = 'a{color:#FFF}';
+    var res = jaw.parse(s, { noPriority: true, noValue: true });
+    expect(res).to.eql({"default":{"a":{"_v":true}}});
   });
 });
 

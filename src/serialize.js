@@ -246,10 +246,15 @@ function record(sel, idx, styles, res, option) {
     }
     res = save(temp, res);
   }
-  res._v = res._v || [];
-  styles.forEach(function(style) {
-    res._v.push([idx, style]);
-  });
+  if(option.noValue) {
+    res._v = true;
+  }
+  else {
+    res._v = res._v || [];
+    styles.forEach(function(style) {
+      res._v.push([idx, style]);
+    });
+  }
   if(!option.noPriority) {
     res._p = _p;
   }
