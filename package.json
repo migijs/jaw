@@ -1,6 +1,6 @@
 {
   "name": "jaw",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Parasitize CSS to JSX for migi",
   "maintainers": [
     {
@@ -31,7 +31,7 @@
     }
   },
   "dependencies": {
-    "homunculus": "~1.0.0"
+    "homunculus": "~1.1.0"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
