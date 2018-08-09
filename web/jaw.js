@@ -1,27 +1,56 @@
-define(function(require, exports, module){var homunculus=function(){var _0=require('homunculus');return _0.hasOwnProperty("default")?_0["default"]:_0}();
-var serialize=function(){var _1=require('./serialize');return _1.hasOwnProperty("default")?_1["default"]:_1}();
+define(function(require, exports, module){'use strict';
 
-var Token = homunculus.getClass('token', 'css');
-var Node = homunculus.getClass('node', 'css');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _homunculus = require('homunculus');
+
+var _homunculus2 = _interopRequireDefault(_homunculus);
+
+var _serialize = require('./serialize');
+
+var _serialize2 = _interopRequireDefault(_serialize);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Token = _homunculus2.default.getClass('token', 'css');
+var Node = _homunculus2.default.getClass('node', 'css');
+
+var Jaw = function () {
   function Jaw() {
+    _classCallCheck(this, Jaw);
+
     this.parser = null;
     this.node = null;
   }
 
-  Jaw.prototype.parse = function(code, option) {
-    if(option===void 0)option={};this.parser = homunculus.getParser('css');
-    this.node = this.parser.parse(code);
-    return serialize(this.node, option);
-  }
+  _createClass(Jaw, [{
+    key: 'parse',
+    value: function parse(code) {
+      var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  Jaw.prototype.tokens = function() {
-    return this.ast ? this.parser.lexer.tokens() : null;
-  }
-  Jaw.prototype.ast = function() {
-    return this.node;
-  }
+      this.parser = _homunculus2.default.getParser('css');
+      this.node = this.parser.parse(code);
+      return (0, _serialize2.default)(this.node, option);
+    }
+  }, {
+    key: 'tokens',
+    value: function tokens() {
+      return this.ast ? this.parser.lexer.tokens() : null;
+    }
+  }, {
+    key: 'ast',
+    value: function ast() {
+      return this.node;
+    }
+  }]);
 
+  return Jaw;
+}();
 
-exports["default"]=new Jaw();});
+exports.default = new Jaw();});

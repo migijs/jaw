@@ -1,8 +1,8 @@
 var gulp = require('gulp');
-var clean = require('gulp-clean');
+var rimraf = require('gulp-rimraf');
 var util = require('gulp-util');
 var through2 = require('through2');
-var jsdc = require('jsdc');
+var babel = require('babel-core');
 
 var fs = require('fs');
 var path = require('path');
@@ -17,18 +17,19 @@ function mkdir(dir) {
 
 gulp.task('clean-bulid', function() {
   return gulp.src('./build/*')
-    .pipe(clean());
+    .pipe(rimraf());
 });
 
 gulp.task('clean-web', function() {
   return gulp.src('./web/*')
-    .pipe(clean());
+    .pipe(rimraf());
 });
 
 function cb(file, enc, cb) {
   var content = file.contents.toString('utf-8');
-  jsdc.reset();
-  content = jsdc.parse(content);
+  content = babel.transform(content, {
+    presets: ['es2015']
+  }).code;
   file.contents = new Buffer(content);
   cb(null, file);
 }

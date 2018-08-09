@@ -1,6 +1,6 @@
 {
   "name": "jaw",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Parasitize CSS to JSX for migi",
   "maintainers": [
     {
@@ -34,16 +34,17 @@
     "homunculus": "~1.2.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
     "blanket": "^1.1.6",
     "coveralls": "^2.11.2",
     "expect.js": "^0.3.1",
     "gulp": "^3.9.0",
-    "gulp-clean": "^0.3.1",
+    "gulp-rimraf": "^0.2.2",
     "gulp-util": "^3.0.1",
     "mocha": "^2.2.4",
     "mocha-lcov-reporter": "^0.0.2",
-    "through2": "^2.0.0",
-    "jsdc": "^0.6.9"
+    "through2": "^2.0.0"
   },
   "main": "./index",
   "engines": {
